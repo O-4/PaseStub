@@ -89,6 +89,9 @@ public final class PaseInstance implements PaseInterface{
             // create was already called. Stop create
             throw createAlreadyCalled(); 
         }
+        if(constructor == null || constructor.trim().isEmpty() || parameters == null){
+            throw new NullPointerException();
+        }
         String jsonString = serialize(parameters);
         Response serverResponse = httpPost(host + "/" + constructor, jsonString);
         if(serverResponse.code() != 200){
@@ -111,6 +114,9 @@ public final class PaseInstance implements PaseInterface{
     public Object getAttribute(String attributeName) 
         throws IOException, JsonProcessingException{
         checkCreated(); 
+        if(attributeName == null || attributeName.trim().isEmpty()){
+            throw new NullPointerException();
+        }
         Response serverResponse = httpGet(getInstanceUrl() + "/" + attributeName);
         if(serverResponse.code() != 200){
             throw responseErrorCode(serverResponse);
@@ -123,6 +129,9 @@ public final class PaseInstance implements PaseInterface{
     public Object callFunction(String functionName, Map<String, Object> parameters) 
         throws JsonProcessingException, IOException{
         checkCreated(); 
+        if(functionName == null || functionName.trim().isEmpty() || parameters == null){
+            throw new NullPointerException();
+        }
         String jsonString = serialize(parameters);
         Response serverResponse = httpPost(getInstanceUrl() + "/" + functionName, jsonString);
         if(serverResponse.code() != 200){
@@ -138,7 +147,7 @@ public final class PaseInstance implements PaseInterface{
     /**
      * Handles basic http post using OkHttp.
      */
-    Response httpPost(String url, String bodyString) throws IOException{
+    private Response httpPost(String url, String bodyString) throws IOException{
         OkHttpClient client = new OkHttpClient();
         MediaType mediaType = MediaType.parse("application/json");
         RequestBody body = RequestBody.create(mediaType, bodyString);
@@ -154,7 +163,7 @@ public final class PaseInstance implements PaseInterface{
     /**
      * Handles basic http get using OkHttp.
      */
-    Response httpGet(String url) throws IOException{
+    private Response httpGet(String url) throws IOException{
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
@@ -171,7 +180,7 @@ public final class PaseInstance implements PaseInterface{
     /**
      * JSON-Serializes the given map. 
      */
-    String serialize(Map<String, Object> map) throws JsonProcessingException{
+    private String serialize(Map<String, Object> map) throws JsonProcessingException{
         ObjectMapper mapper = new ObjectMapper();
         String jsonResult = mapper.writerWithDefaultPrettyPrinter()
             .writeValueAsString(map);
@@ -181,7 +190,7 @@ public final class PaseInstance implements PaseInterface{
     /**
      * JSON-Deserializes the given json string to a map.
      */
-    Map<String, Object> deserializeMap(String jsonString) throws IOException, JsonProcessingException {
+    private Map<String, Object> deserializeMap(String jsonString) throws IOException, JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         TypeReference<HashMap<String, Object>> typeRef 
             = new TypeReference<HashMap<String, Object>>() {};
@@ -191,7 +200,7 @@ public final class PaseInstance implements PaseInterface{
     /**
      * JSON-Deserializes the given json string to a pojo.
      */
-    Object deserializeObject(String jsonString) throws IOException, JsonProcessingException {
+    private Object deserializeObject(String jsonString) throws IOException, JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         TypeReference<Object> typeRef 
             = new TypeReference<Object>() {};
@@ -209,7 +218,7 @@ public final class PaseInstance implements PaseInterface{
     /**
      * Throws RuntimeException if create hasn't been called before. 
      */
-    void checkCreated(){
+    private void checkCreated(){
         if(!isCreated()){
             throw createNotCalled();
         }
@@ -219,7 +228,7 @@ public final class PaseInstance implements PaseInterface{
     /**
      * Creates a IllegalArgumentException for Server responses that aren't 200.
      */
-    IllegalArgumentException responseErrorCode(Response serverResponse) throws IOException{
+    private IllegalArgumentException responseErrorCode(Response serverResponse) throws IOException{
         return new IllegalArgumentException(serverResponse.code() + "\n: " + serverResponse.body().string());
     }
 
@@ -227,16 +236,14 @@ public final class PaseInstance implements PaseInterface{
      * Creates a IllegalStateException that indicates that the create function has not been called before. 
      * Used in functions where create-state is mandatory.
      */
-    IllegalStateException createNotCalled(){
+    private IllegalStateException createNotCalled(){
         return new IllegalStateException("create function was not called.");
     }
     /**
      * Creates a IllegalStateException that indicates that the create function has already been called. 
      * Used in the create function to avoid calling it twice.
      */
-    IllegalStateException createAlreadyCalled(){
+    private IllegalStateException createAlreadyCalled(){
         return new IllegalStateException("create function has already been called.");
     }
-
-
 }

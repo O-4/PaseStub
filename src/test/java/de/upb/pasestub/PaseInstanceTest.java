@@ -20,55 +20,90 @@ public class PaseInstanceTest{
 
     public PaseInstanceTest(){
     }
-
+    private int port = 30000;
+    private String host = "localhost:" + port;
     @Rule
-    public WireMockRule wireMockRule = new WireMockRule(30000); // No-args constructor defaults to port 8080
+    public WireMockRule wireMockRule = new WireMockRule(port);
     
 
     @Test
-    public void test1() throws Exception{
-        PaseInstance instance = new PaseInstance("localhost:5000");
-        Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("a", 5);
-        parameters.put("b", 20);
-        boolean success = instance.create("plainlib.package1.b.B", parameters);
-
-        Assert.assertTrue(success);
-
-        System.out.println(instance.getInstanceUri());
-
-        int a = (Integer) instance.getAttribute("a");
-        Assert.assertEquals(a, 5);
-
-        parameters = new HashMap<String, Object>();
-        parameters.put("c", 2);
-        int result = (Integer) instance.callFunction("cablc", parameters);
-        Assert.assertEquals(result, 45);
-
-
-
-    }
-    //@Test
-    public void exampleTest() throws IOException{
-        stubFor(post(urlEqualTo("/plainlib.package1.b.B"))
+    public void testCorrectCreate() throws IOException{
+        // Create mock
+        String constructor = "plainlib.package1.b.B";
+        stubFor(post(urlEqualTo("/" + constructor))
                 .withHeader("content-type", equalToIgnoreCase("application/json; charset=UTF-8"))
                 .withRequestBody(equalToJson("{\"a\" : 10, \"b\" : 20}"))
                 .willReturn(aResponse()
                     .withStatus(200)
                     .withHeader("Content-Type", "application/json")
                     .withBody("{\"id\": \"7B495ECC9C\", \"class\": \"plainlib.package1.b.B\"}")));
-    
-        OkHttpClient client = new OkHttpClient();
-
-        MediaType mediaType = MediaType.parse("application/json");
-        RequestBody body = RequestBody.create(mediaType, "{\"a\" : 10, \"b\" : 20}");
-        Request request = new Request.Builder()
-            .url("http://localhost:30000/plainlib.package1.b.B")
-            .post(body)
-            .addHeader("content-type", "application/json")
-            .build();
-        Response response = client.newCall(request).execute();
-        System.out.println("\n\n" + response.body().string().toString());
         
+        PaseInstance instance = new PaseInstance(host);
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("a", 10);
+        map.put("b", 20);
+
+        Assert.assertFalse(instance.isCreated());
+        boolean success = instance.create(constructor, map);
+        Assert.assertTrue(success);
+        Assert.assertTrue(instance.isCreated());
+
+        Assert.assertEquals("7B495ECC9C", instance.getId());
+        Assert.assertEquals("plainlib.package1.b.B", instance.getClassName());
+
+        Assert.assertEquals(host + "/plainlib.package1.b.B/7B495ECC9C", instance.getInstanceUrl());
+
     }
+    @Test
+    public void testCorrect1() throws IOException{
+        // Create mock
+        String constructor = "plainlib.package1.b.B";
+        stubFor(post(urlEqualTo("/" + constructor))
+                .withRequestBody(equalToJson("{\"a\" : 10, \"b\" : 20}"))
+                .willReturn(aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "application/json")
+                    .withBody("{\"id\": \"7B495ECC9C\", \"class\": \"plainlib.package1.b.B\"}")));
+
+        stubFor(get(urlEqualTo("/plainlib.package1.b.B/7B495ECC9C/b")).willReturn(aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody("10")));
+        
+        stubFor(post(urlEqualTo("/plainlib.package1.b.B/7B495ECC9C/calc"))
+            .withRequestBody(equalToJson("{\"c\" : 5}"))
+            .willReturn(aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody("110")));
+
+        
+        PaseInstance instance = new PaseInstance(host);
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("a", 10);
+        map.put("b", 20);
+        instance.create(constructor, map);
+
+        int b = (Integer) instance.getAttribute("b");
+        Assert.assertEquals(10, b);
+
+        map = new HashMap<String, Object>();
+        map.put("c", 5);
+        int result = (Integer) instance.callFunction("calc", map);
+        Assert.assertEquals(110, result);
+    }
+    
+    @Test(expected = IOException.class)
+    public void testWrongHostCreate() throws IOException{
+
+        PaseInstance instance = new PaseInstance("localhost:10000"); // server shouldn't be accessible
+        instance.create("con", new HashMap<String, Object>()); // Should be throwing IOException
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testNoCreateCall() throws IOException{
+        PaseInstance instance = new PaseInstance("localhost:10000"); // server shouldn't be accessible
+        instance.callFunction("func",  new HashMap<String, Object>());
+    }
+    
 }
