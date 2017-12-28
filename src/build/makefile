@@ -9,6 +9,8 @@ PACKAGE = de.upb.pasestub
 
 SRC_DIR = ../main/java
 
+TARGET = ../../target/dependency
+
 TEST_DIR = ../test/java/de/upb/pasestub
 
 TESTBIN_DIR = ../../test_bin
@@ -34,16 +36,21 @@ DEPLOY_DIR = ../../deploy
 
 JAR_NAME = pase.jar
 
+all:
+	make compile
+
+download:
+	cd ../.. && mvn install
 
 resolve: 
 	@echo "Downloading dependencies"
 	# Downloads dependency using maven
-	cd ../.. && mvn install dependency:copy-dependencies;
+	test -d $(TARGET) || make download
+	cd ../.. && mvn dependency:copy-dependencies;
 	# Copies jar files to resource directory. (Only overwrites if newer)
-	cp -u -f ../../target/dependency/*.jar $(RESOURCE_DIR);
+	cp -n -f $(TARGET)/*.jar $(RESOURCE_DIR);
 
 compile:
-	make resolve
 	@echo "Compiling..."
 	test -d $(BIN_DIR) || mkdir $(BIN_DIR)
 	$(JC) -d $(BIN_DIR) -cp "$(RESOURCE_DIR)/*" $(JFLAGS) $(CLASSES)
@@ -61,10 +68,11 @@ pack:
 	make clean
 	@echo "Compiling classes..."
 	make compile
-	echo "Packing..."
-	cp -R $(SRC_DIR)/* $(BIN_DIR)
+	@echo "Packing..."
+	cp -n -a -v -R $(SRC_DIR)/* $(BIN_DIR)
 	test -d $(DEPLOY_DIR) || mkdir $(DEPLOY_DIR)
 	$(JAR) $(DEPLOY_DIR)/$(JAR_NAME) manifest.mf -C $(BIN_DIR) .
+	$(REMOVE) $(BIN_DIR)
 
 
 clean:

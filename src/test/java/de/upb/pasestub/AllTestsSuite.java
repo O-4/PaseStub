@@ -4,6 +4,6 @@ import org.junit.runner.RunWith;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        de.upb.pasestub.Dummy.class
+        de.upb.pasestub.PaseInstanceTest.class
      })
 public final class AllTestsSuite {} 
