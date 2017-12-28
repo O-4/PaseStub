@@ -11,6 +11,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -29,7 +31,22 @@ public class PaseInstanceTest{
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("a", 5);
         parameters.put("b", 20);
-        System.out.println(instance.create("plainlib.package1.b.B", parameters));
+        boolean success = instance.create("plainlib.package1.b.B", parameters);
+
+        Assert.assertTrue(success);
+
+        System.out.println(instance.getInstanceUri());
+
+        int a = (Integer) instance.getAttribute("a");
+        Assert.assertEquals(a, 5);
+
+        parameters = new HashMap<String, Object>();
+        parameters.put("c", 2);
+        int result = (Integer) instance.callFunction("cablc", parameters);
+        Assert.assertEquals(result, 45);
+
+
+
     }
     //@Test
     public void exampleTest() throws IOException{
