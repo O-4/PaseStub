@@ -32,7 +32,7 @@ CLASSES := $(shell find $(PROJECT_SRC_DIR) -type f -name '*.java')
 
 TESTS := $(shell find $(TEST_DIR) -type f -name '*.java')
 
-DEPLOY_DIR = $(ROOT_DIR)/deploy
+DEPLOY_DIR = $(ROOT_DIR)
 
 JAR_NAME = pase.jar
 
@@ -61,6 +61,7 @@ test:
 	java -classpath "$(RESOURCE_DIR)/*:$(RESOURCE_TEST_DIR)/*:$(TESTBIN_DIR):$(BIN_DIR)" org.junit.runner.JUnitCore $(PACKAGES_TEST)
 	
 pack:
+	$(REMOVE) $(DEPLOY_DIR)/$(JAR_NAME)
 	make clean
 	@echo "Compiling classes..."
 	make compile
@@ -74,7 +75,6 @@ pack:
 clean:
 	$(REMOVE) $(BIN_DIR)
 	$(REMOVE) $(TESTBIN_DIR)
-	$(REMOVE) $(DEPLOY_DIR)
 
 reset:
 	make clean

@@ -176,7 +176,7 @@ public final class PaseInstance implements PaseInterface{
     }
 
 
-    //TODO: constum json parser if there are any problems parsing objects.
+    //TODO: custom json parser if there are any problems parsing objects.
     /**
      * JSON-Serializes the given map. 
      */
