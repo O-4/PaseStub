@@ -13,6 +13,9 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
+/**
+ * Tests that are executed if there is a Pase server running in the background.
+ */
 public class DeployTest{
 
     /**
@@ -28,7 +31,7 @@ public class DeployTest{
 
         Assert.assertTrue(success);
 
-        System.out.println(instance.getInstanceUrl());
+        //System.out.println(instance.getInstanceUrl());
 
         int a = (Integer) instance.getAttribute("a");
         Assert.assertEquals(a, 5);
@@ -56,15 +59,13 @@ public class DeployTest{
         instance.callFunction("fit", parameters);
 
         // You will have to know the structure of the return value:
-        Map<String, Object> returnedMap = (Map<String,Object>) instance.getAttribute("coef_"); 
-        ArrayList<Double> coef_ = (ArrayList<Double>) returnedMap.get("values");
+        ArrayList<Double> coef_ = (ArrayList<Double>) instance.getAttribute("coef_");
         Assert.assertEquals(0.5, (double) coef_.get(0), 0.01);
 
         parameters.clear();
         double[][] X2 = {{0.5, 1}, {1, 0.5}};
         parameters.put("X", X2);
-        Map<String, Object> returnedMap2 = (Map<String,Object>) instance.callFunction("predict", parameters); 
-        ArrayList<Double> predictions = (ArrayList<Double>) returnedMap2.get("values");
+        ArrayList<Double> predictions = (ArrayList<Double>) instance.callFunction("predict", parameters); 
         List<Double> expected = Arrays.asList(0.75, 0.75);
         assertThat(predictions, is(expected));
     }
