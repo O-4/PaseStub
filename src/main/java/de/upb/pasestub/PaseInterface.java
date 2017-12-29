@@ -1,14 +1,15 @@
 package de.upb.pasestub;
 
-import java.util.Map;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
+import java.util.Map;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
  * Defines java client stub interface to connect to a pase server. 
  * Objects of PaseInterface must call the create function before getAttribute or callFunction, else an Illegal State Exception will be thrown.
  */
-public interface PaseInterface{
+public interface PaseInterface {
 
     /**
      * Creates this interface through a http request to a pase server. This is the first function to be called.
@@ -19,7 +20,7 @@ public interface PaseInterface{
      * @throws IOException when there are problems connecting to the pase server.
      */
     public boolean create(String constructor, Map<String, Object> parameters)
-        throws JsonProcessingException, IOException;
+            throws JsonProcessingException, IOException;
 
     /**
      * Retrieves the value of the attribute with the given name from the server.
@@ -30,9 +31,8 @@ public interface PaseInterface{
      * @throws IOException when there are problems connecting to the pase server.
      * 
      */
-    public Object getAttribute(String attributeName) 
-        throws IOException, JsonProcessingException;
-    
+    public Object getAttribute(String attributeName) throws IOException, JsonProcessingException;
+
     /**
      * Calls the function with the given functionName on the server and returns it's value.
      * @param functionName: function name to be called. Will be used in the http request to the pase server.
@@ -43,7 +43,16 @@ public interface PaseInterface{
      * @throws IOException when there are problems connecting to the pase server.
      * 
      */
-    public Object callFunction(String functionName, Map<String, Object> parameters) 
-        throws JsonProcessingException, IOException;
+    public Object callFunction(String functionName, Map<String, Object> parameters)
+            throws JsonProcessingException, IOException;
+
+    /**
+     * Copies this object by making a 'copy' request to the Pase Server.
+     * 
+     * @return A new PaseInterface object with the same class name but different id.
+     * 
+     */
+    public PaseInterface cloneObject() throws JsonProcessingException, IOException;
+    
 
 }
