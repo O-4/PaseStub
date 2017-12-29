@@ -101,4 +101,25 @@ public class PaseInstanceTest{
         instance.callFunction("func",  new HashMap<String, Object>());
     }
     
+    public void cloneTest() throws Exception{
+
+        stubFor(post(urlEqualTo("/construct"))
+                .willReturn(aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "application/json")
+                    .withBody("{\"id\": \"7B495ECC9C\", \"class\": \"class_name\"}")));
+
+        stubFor(get(urlEqualTo("/construct/class_name/copy/7B495ECC9C"))
+                .willReturn(aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "application/json")
+                    .withBody("{\"id\": \"7B495ECC99\", \"class\": \"plainlib.package1.b.B\"}")));
+
+        PaseInstance instance = new PaseInstance(host);
+        instance.create("construct", new HashMap<>());
+        PaseInstance instanceClone = (PaseInstance) instance.cloneObject();
+        
+        Assert.assertEquals(instance.getClassName(), instanceClone.getClassName());
+        Assert.assertNotEquals(instance.getId(), instanceClone.getId());
+    }
 }

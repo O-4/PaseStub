@@ -50,6 +50,16 @@ public final class PaseInstance implements PaseInterface {
         this("localhost:5000");
     }
 
+    /**
+     * Constructor is used by 'copy' method to initialize a 'created' PaseInstance object. 
+     */
+    private PaseInstance(String host, String className, String id){
+        this(host);
+        this.className = className;
+        this.id = id;
+        this.creationFlag = true;
+    }
+
     // GETTERS:
 
     /**
@@ -109,6 +119,7 @@ public final class PaseInstance implements PaseInterface {
             return false;
         }
     }
+    
 
     @Override
     public Object getAttribute(String attributeName) throws IOException, JsonProcessingException {
@@ -139,6 +150,19 @@ public final class PaseInstance implements PaseInterface {
         Object pojo = deserializeObject(serverResponse.body().string());
         return pojo;
     }
+
+	@Override
+	public PaseInterface cloneObject() throws JsonProcessingException, IOException {
+        checkCreated();
+        Response serverResponse = httpGet(host +  "/" + getClassName() +  "/copy/" + getId());
+        if (serverResponse.code() != 200) {
+            throw responseErrorCode(serverResponse);
+        }
+        Map<String, Object> returnMap = deserializeMap(serverResponse.body().string());
+        String newClassName = returnMap.get("class").toString();
+        String newId = returnMap.get("id").toString();
+        return new PaseInstance(host, newClassName, newId);
+	}
 
     // HELPER FUNCTIONS:
     /**
@@ -238,4 +262,5 @@ public final class PaseInstance implements PaseInterface {
     private IllegalStateException createAlreadyCalled() {
         return new IllegalStateException("create function has already been called.");
     }
+
 }
