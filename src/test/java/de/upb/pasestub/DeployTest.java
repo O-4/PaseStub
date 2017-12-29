@@ -1,10 +1,9 @@
 package de.upb.pasestub;
 
-
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -16,13 +15,13 @@ import static org.junit.Assert.*;
 /**
  * Tests that are executed if there is a Pase server running in the background.
  */
-public class DeployTest{
+public class DeployTest {
 
     /**
      * Tests basic functionality.
      */
     @Test
-    public void deployTest1() throws Exception{
+    public void deployTest1() throws Exception {
         PaseInstance instance = new PaseInstance("localhost:5000");
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("a", 5);
@@ -52,9 +51,9 @@ public class DeployTest{
         Assert.assertTrue(success && instance.isCreated());
         
         parameters.clear();
-        double[][] X = {{0,0}, {1,1}, {2,2}};
+        double[][] X = { { 0, 0 }, { 1, 1 }, { 2, 2 } };
         parameters.put("X", X);
-        double [] y =  {0,1,2};
+        double[] y = { 0, 1, 2 };
         parameters.put("y", y);
         instance.callFunction("fit", parameters);
 
@@ -63,10 +62,34 @@ public class DeployTest{
         Assert.assertEquals(0.5, (double) coef_.get(0), 0.01);
 
         parameters.clear();
-        double[][] X2 = {{0.5, 1}, {1, 0.5}};
+        double[][] X2 = { { 0.5, 1 }, { 1, 0.5 } };
         parameters.put("X", X2);
         ArrayList<Double> predictions = (ArrayList<Double>) instance.callFunction("predict", parameters); 
         List<Double> expected = Arrays.asList(0.75, 0.75);
         assertThat(predictions, is(expected));
+    }
+    /**
+     * Tests this peace of python code:
+     * >>> from sklearn import linear_model
+     * >>> reg = linear_model.Ridge (alpha = .5)
+     * >>> reg.fit ([[0, 0], [0, 0], [1, 1]], [0, .1, 1]) 
+     * Ridge(alpha=0.5, copy_X=True, fit_intercept=True, max_iter=None,
+     * normalize=False, random_state=None, solver='auto', tol=0.001)
+     * >>> reg.coef_
+     * array([ 0.34545455,  0.34545455])
+     * >>> reg.intercept_ 
+     * 0.13636...
+     * >>> reg.predict([[1,2],[10,20],[100,200]])
+     * array([   1.17272727,   10.5       ,  103.77272727])
+     */
+    @Test
+    public void deployTest_Ridge() throws Exception {
+        PaseInstance ridge = new PaseInstance();
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("alpha", 0.5);
+        ridge.create("sklearn.linear_model.Ridge", params);
+        Assert.assertTrue(ridge.isCreated());
+        params.clear();
+        
     }
 }

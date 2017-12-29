@@ -5,7 +5,7 @@ Java client stub for a [PASE](https://github.com/aminfa/Pase) server.
 ## Code Example
 
 Take a look at the code example section of the [PASE repository](https://github.com/aminfa/Pase).
-The same operations can execute using a `PaseInstance`:
+The same operations can be executed using a `PaseInstance`:
 
 ```java
     PaseInstance instance = new PaseInstance("localhost:5000"); // specify host
