@@ -74,7 +74,7 @@ public class DeployTest {
 
 	}
 
-/**
+    /**
      * Tests this peace of python code:
      * >>> from sklearn import linear_model
      * >>> reg = linear_model.Ridge (alpha = .5)
