@@ -15,12 +15,12 @@ public interface PaseInterface {
      * Creates this interface through a http request to a pase server. This is the first function to be called.
      * @param constructor: The callable constructor that will be used in the http request to the pase server: <host>/<constructor>
      * @param parameters: Maps the names of the constructor parameters to their values. The JSON representation of this map will be used as the body of the http request.
-     * @return true if the creation was successfull. This happens if the Response code is 200 and the response body is valid.
      * @throws JsonProcessingException while JSON-serializing given parameters or JSON-deserializing the body of the response.
      * @throws IOException when there are problems connecting to the pase server.
+     * @throws IllegalArgumentException if the returned JSON body of the server isn't valid. (Does'nt contain "class" and "id".) The server may return with error messages indicating that a parameter is missing or something. Thus client side arguments are 'illegal'.
      */
-    public boolean create(String constructor, Map<String, Object> parameters)
-            throws JsonProcessingException, IOException;
+    public void create(String constructor, Map<String, Object> parameters)
+            throws JsonProcessingException, IOException, IllegalArgumentException;
 
     /**
      * Retrieves the value of the attribute with the given name from the server.

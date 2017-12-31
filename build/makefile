@@ -42,7 +42,6 @@ all:
 
 resolve: 
 	@echo "Downloading dependencies"
-	cd $(ROOT_DIR) && mvn -q dependency:resolve
 	cd $(ROOT_DIR) && mvn -q dependency:copy-dependencies -DoutputDirectory=$(RESOURCE_DIR_NAME) -DincludeScope=compile;
 	cd $(ROOT_DIR) && mvn -q dependency:copy-dependencies -DoutputDirectory=$(RESOURCE_TEST_DIR_NAME) -DincludeScope=test;
 
@@ -58,6 +57,7 @@ test:
 	test -d $(TESTBIN_DIR) || mkdir $(TESTBIN_DIR)
 	$(JC) -d $(TESTBIN_DIR) -classpath "$(RESOURCE_DIR)/*:$(RESOURCE_TEST_DIR)/*:$(BIN_DIR)" $(JFLAGS) $(TESTS)
 	@echo "Testing..."
+	
 	java -classpath "$(RESOURCE_DIR)/*:$(RESOURCE_TEST_DIR)/*:$(TESTBIN_DIR):$(BIN_DIR)" org.junit.runner.JUnitCore $(PACKAGES_TEST)
 	
 pack:

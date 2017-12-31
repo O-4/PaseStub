@@ -25,9 +25,9 @@ public class DeployTest {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		parameters.put("a", 5);
 		parameters.put("b", 20);
-		boolean success = instance.create("plainlib.package1.b.B", parameters);
+		instance.create("plainlib.package1.b.B", parameters);
 
-		Assert.assertTrue(success);
+		Assert.assertTrue(instance.isCreated());
 
 		// System.out.println(instance.getInstanceUrl());
 
@@ -50,9 +50,9 @@ public class DeployTest {
 		PaseInstance instance = new PaseInstance("localhost:5000");
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		parameters.put("normalize", true);
-		boolean success = instance.create("sklearn.linear_model.LinearRegression", parameters);
+		instance.create("sklearn.linear_model.LinearRegression", parameters);
 
-		Assert.assertTrue(success && instance.isCreated());
+		Assert.assertTrue(instance.isCreated());
 
 		parameters.clear();
 		double[][] X = { { 0, 0 }, { 1, 1 }, { 2, 2 } };

@@ -13,8 +13,6 @@ import org.junit.Test;
 
 public class PaseInstanceTest{
 
-    public PaseInstanceTest(){
-    }
     private int port = 30000;
     private String host = "localhost:" + port;
     @Rule
@@ -39,8 +37,7 @@ public class PaseInstanceTest{
         map.put("b", 20);
 
         Assert.assertFalse(instance.isCreated());
-        boolean success = instance.create(constructor, map);
-        Assert.assertTrue(success);
+        instance.create(constructor, map);
         Assert.assertTrue(instance.isCreated());
 
         Assert.assertEquals("7B495ECC9C", instance.getId());
@@ -122,5 +119,28 @@ public class PaseInstanceTest{
         
         Assert.assertEquals(instance.getClassName(), instanceClone.getClassName());
         Assert.assertNotEquals(instance.getId(), instanceClone.getId());
+    }
+
+    /**
+     * Tests the case when server returns an empty body.
+     */
+    @Test
+    public void emptyBody() throws Exception{
+        // Mock server
+        stubFor(post(urlEqualTo("/construct"))
+                .willReturn(aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "application/json")));
+
+        PaseInstance instance = new PaseInstance(host);
+        IOException thrownException = null; // assign if it was thrown.
+        try{
+            instance.create("construct", new HashMap<>());
+        } catch(IOException ioException) {
+            thrownException = ioException;
+            Assert.assertEquals(instance.emptyBody().getMessage(), thrownException.getMessage());
+        }
+        Assert.assertNotNull(thrownException); // If it is null it wasn't thrown as expected.
+        Assert.assertFalse(instance.isCreated());
     }
 }

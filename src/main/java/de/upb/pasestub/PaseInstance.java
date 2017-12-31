@@ -95,42 +95,52 @@ public final class PaseInstance implements PaseInterface {
 
     // INTERFACE: 
     @Override
-    public boolean create(String constructor, Map<String, Object> parameters)
-            throws JsonProcessingException, IOException {
+    public void create(String constructor, Map<String, Object> parameters)
+            throws JsonProcessingException, IOException, IllegalArgumentException {
         if (isCreated()) {
             // create was already called. Stop create
             throw createAlreadyCalled();
         }
+        // Checks if parameters are null.
         if (constructor == null || constructor.trim().isEmpty() || parameters == null) {
             throw new NullPointerException();
         }
+        
         String jsonString = serialize(parameters);
         Response serverResponse = httpPost(host + "/" + constructor, jsonString);
         if (serverResponse.code() != 200) {
-            return false;
+            // Server didn't reply with OK
+            throw responseErrorCode(serverResponse);
         }
+
+        // If successfull Server response should consist of a json body containing "id" and "class".
         Map<String, Object> returnValues = deserializeMap(serverResponse.body().string());
         if (returnValues.containsKey("id") && returnValues.containsKey("class")) {
+            // Extract "id" and "class". Creation successfull.
             id = returnValues.get("id").toString();
             className = returnValues.get("class").toString();
             creationFlag = true;
-            return true;
         } else {
-            return false;
+            // Either "id" or "class" don't exist in the json in the response-body.
+            throw createObjArgumentException();
         }
     }
     
 
     @Override
     public Object getAttribute(String attributeName) throws IOException, JsonProcessingException {
-        checkCreated();
+        checkCreated(); // May throw an Exception.
+
+        // Check for null in parameters.
         if (attributeName == null || attributeName.trim().isEmpty()) {
             throw new NullPointerException();
         }
         Response serverResponse = httpGet(getInstanceUrl() + "/" + attributeName);
         if (serverResponse.code() != 200) {
+            // Server didn't reply with OK
             throw responseErrorCode(serverResponse);
         }
+        // Try to deserialize the object from the server. May throw an exception.
         Object pojo = deserializeObject(serverResponse.body().string());
         return pojo;
     }
@@ -196,6 +206,9 @@ public final class PaseInstance implements PaseInterface {
      * JSON-Serializes the given map. 
      */
     private String serialize(Map<String, Object> map) throws JsonProcessingException {
+        if(map.isEmpty()){
+            return "{}"; // No arguments to map.
+        }
         ObjectMapper mapper = new ObjectMapper();
         String jsonResult = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(map);
         return jsonResult;
@@ -205,6 +218,9 @@ public final class PaseInstance implements PaseInterface {
      * JSON-Deserializes the given json string to a map.
      */
     private Map<String, Object> deserializeMap(String jsonString) throws IOException, JsonProcessingException {
+        if(jsonString == null || jsonString.isEmpty()){
+            throw emptyBody(); // response body was empty
+        }
         ObjectMapper mapper = new ObjectMapper();
         TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {
         };
@@ -216,6 +232,9 @@ public final class PaseInstance implements PaseInterface {
      * JSON-Deserializes the given json string to a pojo.
      */
     private Object deserializeObject(String jsonString) throws IOException, JsonProcessingException {
+        if(jsonString == null || jsonString.isEmpty()){
+            throw emptyBody(); // response body was empty
+        }
         ObjectMapper mapper = new ObjectMapper();
         TypeReference<Object> typeRef = new TypeReference<Object>() {
         };
@@ -251,16 +270,28 @@ public final class PaseInstance implements PaseInterface {
      * Creates a IllegalStateException that indicates that the create function has not been called before. 
      * Used in functions where create-state is mandatory.
      */
-    private IllegalStateException createNotCalled() {
+    IllegalStateException createNotCalled() {
         return new IllegalStateException("create function was not called.");
     }
 
     /**
-     * Creates a IllegalStateException that indicates that the create function has already been called. 
+     * Creates an IllegalStateException that indicates that the create function has already been called. 
      * Used in the create function to avoid calling it twice.
      */
     private IllegalStateException createAlreadyCalled() {
         return new IllegalStateException("create function has already been called.");
+    }
+
+    /**
+     * Creates an IllegalArgumentException that indicates that the server create call didn't respond the way it was expected.
+     * 
+     */
+    IllegalArgumentException createObjArgumentException(){
+        return new IllegalArgumentException("The server didn't respond with a valid JSON body. Most likely the client-side parameters were invalid.");
+    }
+
+    IOException emptyBody(){
+        return new IOException("The reponse body is empty.");
     }
 
 }
