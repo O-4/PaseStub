@@ -22,15 +22,13 @@ The same operations can be executed using a `PaseInstance`:
     instance.callFunction("fit", parameters);
 
     // You will have to know the structure of the return value:
-    Map<String, Object> returnedMap = (Map<String,Object>) instance.getAttribute("coef_"); 
-    ArrayList<Double> coef_ = (ArrayList<Double>) returnedMap.get("values");
+    ArrayList<Double> coef_ = (ArrayList<Double>) instance.getAttribute("coef_");
     System.out.println("coef_: " + coef_); // coef_: [0.5,  0.5] 
 
     parameters.clear();
     double[][] X2 = {{0.5, 1}, {1, 0.5}};
     parameters.put("X", X2);
-    Map<String, Object> returnedMap2 = (Map<String,Object>) instance.callFunction("predict", parameters); 
-    ArrayList<Double> predictions = (ArrayList<Double>) returnedMap2.get("values");
+    ArrayList<Double> predictions = (ArrayList<Double>) instance.callFunction("predict", parameters);
     System.out.println("predictions: " + predictions); // predictions: [0.75,  0.75] 
 ```
 
