@@ -164,10 +164,12 @@ public final class PaseInstance implements PaseInterface {
 	@Override
 	public PaseInterface cloneObject() throws JsonProcessingException, IOException {
         checkCreated();
+        // Make copy http call:
         Response serverResponse = httpGet(host +  "/" + getClassName() +  "/copy/" + getId());
         if (serverResponse.code() != 200) {
             throw responseErrorCode(serverResponse);
         }
+        // Retrieve returned map's  "class" and "id" value.
         Map<String, Object> returnMap = deserializeMap(serverResponse.body().string());
         String newClassName = returnMap.get("class").toString();
         String newId = returnMap.get("id").toString();

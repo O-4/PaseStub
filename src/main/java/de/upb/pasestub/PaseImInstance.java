@@ -11,7 +11,7 @@ import java.util.Map;
 public final class PaseImInstance implements PaseInterface {
 
     /**
-     * Uses the implementation of PaseInstance. This field should always be assigned PaseInstance object with the 'created'-Flag = true. 
+     * Uses the implementation of PaseInstance. This field should always be assigned with a PaseInstance object with the 'created'-Flag = true. 
      */
     private final PaseInstance mutableInstance;
 
@@ -19,7 +19,10 @@ public final class PaseImInstance implements PaseInterface {
      * Wraps the createdInstance if it is 'created'.
      */
     public PaseImInstance(PaseInstance createdInstance){
-        if(createdInstance.isCreated()){
+        if(createdInstance == null){
+            throw new NullPointerException();
+        }
+        else if(createdInstance.isCreated()){
             mutableInstance = createdInstance;
         }
         else {

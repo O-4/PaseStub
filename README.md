@@ -32,14 +32,16 @@ The same operations can be executed using a `PaseInstance`:
     System.out.println("predictions: " + predictions); // predictions: [0.75,  0.75] 
 ```
 
-## Installation
+For more code examples look at `DeployTest.java` in the `src/test` folder.
 
-Clone this repository. Use the `makefile` in the `build/` folder to build this project:
+## Installation
+Clone this repository.
+You can use maven to build this project.
+
+Alternatively, use the `makefile` in the `build/` folder to build this project:
 
 ```bash
-cd build/
 make
 ``` 
 
-`pasestub.jar` will afterwards lie in the root folder and the `resources` folder will contain all the dependecies needed to use this stub.
-You can alternatively then use maven to build this project too.
+`pasestub.jar` will afterwards lie in the build folder and the `lib` folder will contain all the dependencies needed to use this stub.

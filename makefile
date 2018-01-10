@@ -4,15 +4,15 @@ JAR = jar cfm
 REMOVE = rm -rf -f
 .SUFFIXES: .java .class
 
-ROOT_DIR = ..
+ROOT_DIR = .
 
 SRC_DIR = $(ROOT_DIR)/src
 
-PROJECT_SRC_DIR = $(ROOT_DIR)/src/main/java
+PROJECT_SRC_DIR = $(SRC_DIR)/main/java
 
 PACKAGE = de.upb.pasestub
 
-TEST_DIR = $(SRC_DIR)/test/java/de/upb/pasestub
+TEST_DIR = $(SRC_DIR)/test/java
 
 TESTBIN_DIR = $(ROOT_DIR)/test_bin
 
@@ -32,7 +32,7 @@ CLASSES := $(shell find $(PROJECT_SRC_DIR) -type f -name '*.java')
 
 TESTS := $(shell find $(TEST_DIR) -type f -name '*.java')
 
-DEPLOY_DIR = $(ROOT_DIR)
+DEPLOY_DIR = $(ROOT_DIR)/build
 
 JAR_NAME = pase.jar
 
@@ -80,5 +80,6 @@ reset:
 	make clean
 	$(REMOVE) $(RESOURCE_DIR)
 	$(REMOVE) $(RESOURCE_TEST_DIR)
+	$(REMOVE) $(DEPLOY_DIR)/$(JAR_NAME)
 	cd $(ROOT_DIR) && mvn -q clean
 

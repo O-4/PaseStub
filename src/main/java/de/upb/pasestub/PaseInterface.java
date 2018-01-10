@@ -7,12 +7,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
  * Defines java client stub interface to connect to a pase server. 
- * Objects of PaseInterface must call the create function before getAttribute or callFunction, else an Illegal State Exception will be thrown.
  */
 public interface PaseInterface {
 
     /**
-     * Creates this interface through a http request to a pase server. This is the first function to be called.
+     * Creates this interface through a http request to a pase server. 
      * @param constructor: The callable constructor that will be used in the http request to the pase server: <host>/<constructor>
      * @param parameters: Maps the names of the constructor parameters to their values. The JSON representation of this map will be used as the body of the http request.
      * @throws JsonProcessingException while JSON-serializing given parameters or JSON-deserializing the body of the response.
