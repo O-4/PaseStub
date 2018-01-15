@@ -23,7 +23,6 @@ hs_err_pid*
 
 # From My Makefile:
 bin/
-resources/
 test_bin/
 deploy/
 

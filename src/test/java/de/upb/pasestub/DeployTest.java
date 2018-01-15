@@ -15,13 +15,14 @@ import org.junit.Test;
 public class DeployTest {
 
 	private static final double PRECISION = 0.01;
+	private static final String host = "localhost:5000";
 
 	/**
 	 * Tests basic functionality.
 	 */
 	@Test
 	public void deployTest1() throws Exception {
-		PaseInstance instance = new PaseInstance("localhost:5000");
+		PaseInstance instance = new PaseInstance(host);
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		parameters.put("a", 5);
 		parameters.put("b", 20);
@@ -47,7 +48,7 @@ public class DeployTest {
 
 	@Test
 	public void deployTest_LinearRegression() throws Exception {
-		PaseInstance instance = new PaseInstance("localhost:5000");
+		PaseInstance instance = new PaseInstance(host);
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		parameters.put("normalize", true);
 		instance.create("sklearn.linear_model.LinearRegression", parameters);
@@ -86,7 +87,7 @@ public class DeployTest {
      */
     @Test
     public void deployTest_Ridge() throws Exception {
-        PaseInstance ridge = new PaseInstance();
+        PaseInstance ridge = new PaseInstance(host);
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("alpha", 0.5);
         ridge.create("sklearn.linear_model.Ridge", params);
@@ -108,5 +109,18 @@ public class DeployTest {
         for(int index = 0, size = predictionResults.size(); index<size; index++) {
             Assert.assertEquals(predictionResults.get(index), expected.get(index), 0.01);
         }
-    }
+	}
+	@Test
+    public void deployTest_composition1() throws Exception {
+		PaseComposition composition = PaseComposition.fromFilePath("resources/composition1.json");
+		Map<String, Object> resultMap = composition.execute(host);
+		Assert.assertEquals(7, resultMap.get("f2"));
+		Assert.assertTrue(resultMap.containsKey("f3") && resultMap.get("f3") instanceof PaseInstance);
+	}
+	@Test
+    public void deployTest_composition2() throws Exception {
+		PaseComposition composition = PaseComposition.fromFilePath("resources/composition2.json");
+		Map<String, Object> resultMap = composition.execute(host);
+		System.out.println("\n\n" + resultMap + "\n");
+	}
 }

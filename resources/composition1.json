@@ -1,0 +1,5 @@
+{
+	"execute" : "f1 = plainlib.package1.b.B::__construct({a = 1, b = 2});f2 = f1::calc({c=3});f3 = plainlib.package1.b.B::random();",
+	"return" : ["f1", "f2"],
+	"store" : ["f3"]
+}

@@ -53,7 +53,7 @@ public final class PaseInstance implements PaseInterface {
     /**
      * Constructor is used by 'copy' method to initialize a 'created' PaseInstance object. 
      */
-    private PaseInstance(String host, String className, String id){
+    public PaseInstance(String host, String className, String id){
         this(host);
         this.className = className;
         this.id = id;
@@ -113,7 +113,7 @@ public final class PaseInstance implements PaseInterface {
             throw responseErrorCode(serverResponse);
         }
 
-        // If successfull Server response should consist of a json body containing "id" and "class".
+        // If successfull, Server response should consist of a json body containing "id" and "class".
         Map<String, Object> returnValues = deserializeMap(serverResponse.body().string());
         if (returnValues.containsKey("id") && returnValues.containsKey("class")) {
             // Extract "id" and "class". Creation successfull.
@@ -224,8 +224,7 @@ public final class PaseInstance implements PaseInterface {
             throw emptyBody(); // response body was empty
         }
         ObjectMapper mapper = new ObjectMapper();
-        TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {
-        };
+        TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {};
         Map<String, Object> map = mapper.readValue(jsonString, typeRef);
         return map;
     }
@@ -238,8 +237,7 @@ public final class PaseInstance implements PaseInterface {
             throw emptyBody(); // response body was empty
         }
         ObjectMapper mapper = new ObjectMapper();
-        TypeReference<Object> typeRef = new TypeReference<Object>() {
-        };
+        TypeReference<Object> typeRef = new TypeReference<Object>() {};
         Object pojo = mapper.readValue(jsonString, typeRef);
         return pojo;
     }
