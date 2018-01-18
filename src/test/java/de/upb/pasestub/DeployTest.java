@@ -30,7 +30,7 @@ public class DeployTest {
 
 		Assert.assertTrue(instance.isCreated());
 
-		// System.out.println(instance.getInstanceUrl());
+		//System.out.println(instance.getInstanceUrl());
 
 		int a = (Integer) instance.getAttribute("a");
 		Assert.assertEquals(a, 5);
@@ -107,7 +107,7 @@ public class DeployTest {
 
         List<Double> expected = Arrays.asList(1.17272727, 10.5 , 103.77272727);
         for(int index = 0, size = predictionResults.size(); index<size; index++) {
-            Assert.assertEquals(predictionResults.get(index), expected.get(index), 0.01);
+            Assert.assertEquals(predictionResults.get(index), expected.get(index), PRECISION);
         }
 	}
 	@Test
@@ -121,6 +121,11 @@ public class DeployTest {
     public void deployTest_composition2() throws Exception {
 		PaseComposition composition = PaseComposition.fromFilePath("resources/composition2.json");
 		Map<String, Object> resultMap = composition.execute(host);
-		System.out.println("\n\n" + resultMap + "\n");
+		double[] exptectedPredictions = {-0.236, 50.641, 110.041, 142.269, 179.063, 215.796, 216.136, 246.181, 343.532, 459.935}; // manually wrote this array down.
+		//System.out.println(resultMap.get("prediction"));
+		List<Double> predictions = (List<Double>)((Map<String, Object>) resultMap.get("prediction")).get("values");
+		for(int i = 0; i < exptectedPredictions.length; i++){
+			Assert.assertEquals(predictions.get(i), exptectedPredictions[i], PRECISION);
+		}
 	}
 }
