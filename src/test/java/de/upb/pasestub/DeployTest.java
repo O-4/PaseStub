@@ -110,14 +110,14 @@ public class DeployTest {
             Assert.assertEquals(predictionResults.get(index), expected.get(index), PRECISION);
         }
 	}
-	@Test
+	//@Test
     public void deployTest_composition1() throws Exception {
 		PaseComposition composition = PaseComposition.fromFilePath("resources/composition1.json");
 		Map<String, Object> resultMap = composition.execute(host);
 		Assert.assertEquals(7, resultMap.get("f2"));
 		Assert.assertTrue(resultMap.containsKey("f3") && resultMap.get("f3") instanceof PaseInstance);
 	}
-	@Test
+	//@Test
     public void deployTest_composition2() throws Exception {
 		PaseComposition composition = PaseComposition.fromFilePath("resources/composition2.json");
 		Map<String, Object> resultMap = composition.execute(host);
